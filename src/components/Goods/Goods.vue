@@ -19,7 +19,7 @@
                     <li v-for="item in goods" class="food-list" ref="foodList">
                         <h1 class="title">{{item.name}}</h1>
                         <ul>
-                            <li v-for="food in item.foods" class="food-item border-1px">
+                            <li @click="selectFood(food, $event)" v-for="food in item.foods" class="food-item border-1px">
                                 <div class="icon">
                                     <img width="57" height="57" :src="food.icon">
                                 </div>
@@ -34,7 +34,7 @@
                                         <span class="old" v-show="food.oldPrice">￥{{food.oldPrice}}</span>
                                     </div>
                                     <div class="cartcontrol-wrapper">
-                                        <CartControl :food="food"></CartControl>
+                                        <CartControl :food="food" @add="addFood"></CartControl>
                                     </div>
                                 </div>
                             </li>
@@ -43,11 +43,13 @@
                 </ul>
             </div>
             <ShopCart
+                ref="shopcart"
                 :delivery-price="seller.deliveryPrice"
                 :minPrice="seller.minPrice"
                 :selectFoods="selectFoods">
             </ShopCart>
         </div>
+        <Food :food="selectedFood" ref="food"></Food>
     </div>
 </template>
 
@@ -55,6 +57,7 @@
 import BScroll from 'better-scroll'
 import ShopCart from '@/components/ShopCart/ShopCart'
 import CartControl from '@/components/CartControl/CartControl'
+import Food from '@/components/Food/Food'
 
 const ERR_OK = 0
 
@@ -118,6 +121,13 @@ export default {
             let el = foodList[index]
             this.foodsScroll.scrollToElement(el, 300)
         },
+        selectFood (food, event) {
+            if(!event._constructed) {
+                return
+            }
+            this.selectedFood = food
+            this.$refs.food.show()
+        },
         _initScroll () {
             this.menuScroll = new BScroll(this.$refs.menuWrapper, {
                 click : true
@@ -146,11 +156,21 @@ export default {
             let menuList = this.$refs.menuList
             let el = menuList[index]
             this.menuScroll.scrollToElement(el, 300, 0, -100)
+        },
+        addFood (target) {
+            this._drop(target)
+        },
+        _drop (target) {
+            //体验优化，异步执行下落动画
+            this.$nextTick(() => {
+                this.$refs.shopcart.drop(target)
+            })
         }
     },
     components : {
         ShopCart,
-        CartControl
+        CartControl,
+        Food
     }
 }
 </script>
