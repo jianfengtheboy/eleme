@@ -150,6 +150,9 @@ export default {
         }
     },
     methods : {
+        addFood (target) {
+            this.drop(target);
+        },
         drop (el) {
             for(let i = 0; i < this.balls.length; i ++) {
                 let ball = this.balls[i]
@@ -216,9 +219,6 @@ export default {
                 return
             }
             window.alert(`支付${this.totalPrice}元`)
-        },
-        addFood (target) {
-            this.drop(target);
         }
     },
     components : {

@@ -49,7 +49,7 @@
                 :selectFoods="selectFoods">
             </ShopCart>
         </div>
-        <Food :food="selectedFood" ref="food"></Food>
+        <Food :food="selectedFood" ref="food" @add="addFood"></Food>
     </div>
 </template>
 
