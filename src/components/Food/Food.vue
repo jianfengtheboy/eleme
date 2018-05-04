@@ -42,15 +42,14 @@
                     </RatingSelect>
                     <div class="rating-wrapper">
                         <ul v-show="food.ratings && food.ratings.length">
-                            <li v-for="rating in food.ratings" class="rating-item border-1px">
+                            <li v-show="needShow(rating.rateType,rating.text)" v-for="rating in food.ratings" class="rating-item border-1px">
                                 <div class="user">
                                     <span class="name">{{rating.username}}</span>
                                     <img :src="rating.avatar" class="avatar" width="12" height="12">
                                 </div>
-                                <div class="time">{{rating.rateTime}}</div>
+                                <div class="time">{{rating.rateTime | formateDate}}</div>
                                 <p class="text">
-                                    <span :class="{'icon-thumb_up':rating.rateType===0,'icon-thumb_down':rating.rateType===1}"></span>
-                                    {{rating.text}}
+                                    <span :class="{'icon-thumb_up':rating.rateType===0,'icon-thumb_down':rating.rateType===1}"></span>{{rating.text}}
                                 </p>
                             </li>
                         </ul>
@@ -65,6 +64,7 @@
 <script type="text/ecmascript-6">
 import BScroll from 'better-scroll'
 import Vue from 'vue'
+import {formateDate} from '@/common/js/date'
 import CartControl from '@/components/CartControl/CartControl'
 import RatingSelect from '@/components/RatingSelect/RatingSelect'
 import Split from '@/components/Split/Split'
@@ -99,7 +99,7 @@ export default {
                     this.scroll = new BScroll(this.$refs.food, {
                         click : true
                     })
-                }else{
+                } else {
                     this.scroll.refresh()
                 }
             })
@@ -117,6 +117,16 @@ export default {
         addFood (target) {
             this.$emit('add', target)
         },
+        needShow (type, text) {
+            if (this.onlyContent && !text) {
+              return false;
+            }
+            if (this.selectType === ALL) {
+              return true;
+            } else {
+              return type === this.selectType;
+            }
+        },
         selectRating (type) {
             this.selectType = type
             this.$nextTick(() => {
@@ -129,6 +139,12 @@ export default {
                 this.scroll.refresh()
             })
         }
+    },
+    filters: {
+      formateDate (time) {
+        let date = new Date(time);
+        return formateDate(date, 'yyyy-MM-dd hh:mm');
+      }
     },
     components : {
         CartControl,
@@ -283,4 +299,8 @@ export default {
                         color : rgb(0,160,220)
                     .icon-thumb_down
                         color : rgb(147,153,159)
+            .no-rating
+                padding: 16px 0
+                font-size: 12px
+                color: rgb(147, 153, 159)
 </style>
